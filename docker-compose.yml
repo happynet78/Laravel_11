@@ -16,9 +16,9 @@ services:
     nginx:
         image: nginx
         ports:
-            -   8080:80
+            -  6532:80
         volumes:
-            -   ./:/var/www
+            - ./:/var/www
             - ./docker-compose/nginx/conf.d:/etc/nginx/conf.d/
         networks:
             - application_network
@@ -36,6 +36,32 @@ services:
             - application_network
         volumes:
             - mysql_data:/var/lib/mysql
+
+    # phpmyadmin
+    phpmyadmin:
+        image: phpmyadmin:5.2.1-apache
+        container_name: phpmyadmin_container
+        restart: unless-stopped
+        ports:
+            -   "8355:80"
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_USER: root
+            PMA_PASSWORD: 12345678
+        depends_on:
+            -   mysql
+        networks:
+            - application_network
+
+    # Redis Server
+    redis:
+        image: redis:7.2-alpine
+        container_name: redis_container
+        ports:
+            -   "7370:6379"
+        networks:
+            - application_network
 
 networks:
     application_network:
